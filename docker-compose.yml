@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Base de Datos PostgreSQL con inicialización automática de esquema y seed
+  # ----------------------------------------------------------------------------
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: inventory_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-inventory_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./Database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-inventory_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inventory_network
+
+  # ----------------------------------------------------------------------------
+  # 2. Backend API (Node.js + Express)
+  # ----------------------------------------------------------------------------
+  backend_api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    container_name: inventory_backend
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres_db:5432/${DB_NAME:-inventory_db}
+      CORS_ORIGIN: "*"
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - inventory_network
+
+  # ----------------------------------------------------------------------------
+  # 3. Frontend Client (React SPA + Nginx)
+  # ----------------------------------------------------------------------------
+  frontend_client:
+    build:
+      context: ./Client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+    container_name: inventory_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend_api
+    networks:
+      - inventory_network
+
+# ------------------------------------------------------------------------------
+# Volúmenes y Redes
+# ------------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  inventory_network:
+    driver: bridge
