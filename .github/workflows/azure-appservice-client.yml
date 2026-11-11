@@ -10,8 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  # Cambia 'stockflow-client' por el nombre exacto de tu Azure Web App (o defínelo como Secret/Variable en GitHub)
-  AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME || 'stockflow-client' }}
+  AZURE_WEBAPP_NAME: 'stockflow-client-hhbka9a6f8g4djfd'
   NODE_VERSION: '20.x'
 
 jobs:
@@ -55,6 +54,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: client-dist
+          path: ./dist
 
       - name: Desplegar en Azure Web App
         id: deploy-to-webapp
@@ -62,5 +62,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
-          package: .
+          package: ./dist
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}

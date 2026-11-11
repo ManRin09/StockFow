@@ -32,7 +32,7 @@ No requiere comando de inicio. Vite ya incluye automáticamente [web.config](fil
 5. Agrega el siguiente secreto (**Repository secret**):
    - **Nombre:** `AZUREAPPSERVICE_PUBLISHPROFILE`
    - **Valor:** Pega todo el contenido de texto del archivo `.PublishSettings` descargado.
-6. *(Opcional)* En **Variables** (o editando directamente el workflow [.github/workflows/azure-appservice-client.yml](file:///C:/Users/maner/Documents/ManRin09.github.io/StockFow/.github/workflows/azure-appservice-client.yml)), define `AZURE_WEBAPP_NAME` con el nombre de tu aplicación en Azure.
+6. El nombre configurado en el workflow es `stockflow-client-hhbka9a6f8g4djfd`.
 
 ---
 
