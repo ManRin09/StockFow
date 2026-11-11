@@ -38,7 +38,7 @@ No requiere comando de inicio. Vite ya incluye automáticamente [web.config](fil
 
 ## 3. Funcionamiento del Workflow
 
-El archivo [.github/workflows/azure-appservice-client.yml](file:///C:/Users/maner/Documents/ManRin09.github.io/StockFow/.github/workflows/azure-appservice-client.yml) se ejecuta automáticamente en cada `git push` a `main` cuando hay cambios dentro de la carpeta `Client/`:
+El archivo [.github/workflows/main_stockflow-client.yml](file:///C:/Users/maner/Documents/ManRin09.github.io/StockFow/.github/workflows/main_stockflow-client.yml) se ejecuta automáticamente en cada `git push` a `main`:
 
 1. Instala las dependencias con `npm ci` dentro de `Client/`.
 2. Compila el frontend con `npm run build` generando `Client/dist`.
